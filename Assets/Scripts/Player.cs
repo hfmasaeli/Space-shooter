@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _speed = 3.5f;
     [SerializeField]
+    private float _speedBoost = 4f;
+    [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
     private float _fireRate = 0.15f;
@@ -16,8 +18,14 @@ public class Player : MonoBehaviour
     private int _lives = 3;
     private SpawnManager _spawnManager;
     private bool _isTripleShot = false;
+    private bool _isShield = false;
+    private bool _isSpeed = false;
     [SerializeField]
     private GameObject _tripleShotPrefab;
+    [SerializeField]
+    private GameObject _shieldPrefab;
+    [SerializeField]
+    private GameObject _boost;
 
 
     // Start is called before the first frame update
@@ -49,7 +57,14 @@ public class Player : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
-        transform.Translate(_speed * Time.deltaTime * direction);
+        if (_isSpeed)
+        {
+            transform.Translate(_speed * _speedBoost * Time.deltaTime * direction);
+        }
+        else
+        {
+            transform.Translate(_speed * Time.deltaTime * direction);
+        }
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0), 0);
 
@@ -79,11 +94,17 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        if (_isShield)
+        {
+            _isShield = false;
+            _shieldPrefab.SetActive(false);
+            return;
+        }
         _lives--;
         if (_lives < 1)
         {
             _spawnManager.OnPlayerDeath();
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
     public void TripleShotActive()
@@ -93,10 +114,39 @@ public class Player : MonoBehaviour
 
     }
 
+
     IEnumerator TripleShotPowerDown()
     {
         yield return new WaitForSeconds(5.0f);
         _isTripleShot = false;
     }
 
+    public void ShieldActive()
+    {
+        _isShield = true;
+        _shieldPrefab.SetActive(true);
+        StartCoroutine(ShieldPowerDown());
+    }
+
+    IEnumerator ShieldPowerDown()
+    {
+        yield return new WaitForSeconds(7f);
+        _isShield = false;
+        _shieldPrefab.SetActive(false);
+
+
+    }
+    public void SpeedActive()
+    {
+        _isSpeed = true;
+        _boost.SetActive(true);
+        StartCoroutine(SpeedPowerDown());
+    }
+
+    IEnumerator SpeedPowerDown()
+    {
+        yield return new WaitForSeconds(3f);
+        _isSpeed = false;
+        _boost.SetActive(false);
+    }
 }

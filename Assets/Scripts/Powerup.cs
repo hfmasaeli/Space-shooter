@@ -6,12 +6,8 @@ public class Powerup : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3.0f;
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
+    [SerializeField]
+    private int _powerID;
     // Update is called once per frame
     void Update()
     {
@@ -29,7 +25,21 @@ public class Powerup : MonoBehaviour
             Player player = other.transform.GetComponent<Player>();
             if (player != null)
             {
-                player.TripleShotActive();
+                switch (_powerID)
+                {
+                    case 0:
+                        player.TripleShotActive();
+                        break;
+                    case 1:
+                        player.SpeedActive();
+                        break;
+                    case 2:
+                        player.ShieldActive();
+                        break;
+                    default:
+                        Debug.Log($"PowerID not assigned {_powerID}");
+                        break;
+                }
             }
 
             Destroy(this.gameObject);
