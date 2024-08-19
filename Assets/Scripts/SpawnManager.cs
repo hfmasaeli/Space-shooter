@@ -16,6 +16,10 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+    }
+    public void StartSpawning()
+    {
         StartCoroutine(SpawnEnemyRoutine());
         StartCoroutine(SpawnPowerupRoutine());
     }
@@ -29,6 +33,7 @@ public class SpawnManager : MonoBehaviour
     IEnumerator SpawnEnemyRoutine()
 
     {
+        yield return new WaitForSeconds(1.3f);
         while (_stopSpawning == false)
         {
             GameObject newEnemy = Instantiate(_enemyPrefab, new Vector3(Random.Range(-8.0f, 8.0f), 7.3f, 0), Quaternion.identity);
@@ -39,6 +44,7 @@ public class SpawnManager : MonoBehaviour
     }
     IEnumerator SpawnPowerupRoutine()
     {
+        yield return new WaitForSeconds(1.3f);
         while (_stopSpawning == false)
         {
             int rand = Random.Range(0, 3);

@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _boost;
     [SerializeField]
+    private GameObject[] _damagedEngines;
+    [SerializeField]
     private int _score;
     private UIManager _uiManager;
     private GameManager _gameManager;
@@ -118,6 +120,14 @@ public class Player : MonoBehaviour
             return;
         }
         _lives--;
+        if (_lives == 2)
+        {
+            _damagedEngines[0].SetActive(true);
+        }
+        if (_lives == 1)
+        {
+            _damagedEngines[1].SetActive(true);
+        }
         _uiManager.UpdateLives(_lives);
         if (_lives < 1)
         {
