@@ -22,14 +22,28 @@ public class Player : MonoBehaviour
     private bool _isSpeed = false;
     [SerializeField]
     private GameObject _tripleShotPrefab;
+
     [SerializeField]
     private GameObject _shieldPrefab;
     [SerializeField]
     private GameObject _boost;
     [SerializeField]
+    private GameObject[] _damagedEngines;
+    [SerializeField]
     private int _score;
     private UIManager _uiManager;
     private GameManager _gameManager;
+    private AudioSource _audioSource;
+    [SerializeField]
+    private AudioClip _laserSound;
+    [SerializeField]
+    private AudioClip _boostSound;
+    [SerializeField]
+    private GameObject _explosionPrefab;
+
+
+
+
 
 
     // Start is called before the first frame update
@@ -37,6 +51,7 @@ public class Player : MonoBehaviour
     {
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
+        _audioSource = GetComponent<AudioSource>();
 
 
         transform.position = new Vector3(0, 0, 0);
@@ -53,6 +68,10 @@ public class Player : MonoBehaviour
         if (_gameManager == null)
         {
             Debug.LogError("Game Manager is NULL!");
+        }
+        if (_audioSource == null)
+        {
+            Debug.LogError("AudioSource1 on the player is NULL!");
         }
     }
 
@@ -107,6 +126,8 @@ public class Player : MonoBehaviour
         {
             Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
         }
+
+        _audioSource.PlayOneShot(_laserSound);
     }
 
     public void Damage()
@@ -118,13 +139,24 @@ public class Player : MonoBehaviour
             return;
         }
         _lives--;
+        if (_lives == 2)
+        {
+            _damagedEngines[0].SetActive(true);
+        }
+        if (_lives == 1)
+        {
+            _damagedEngines[1].SetActive(true);
+        }
         _uiManager.UpdateLives(_lives);
         if (_lives < 1)
         {
+
             _spawnManager.OnPlayerDeath();
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             Destroy(gameObject);
             _uiManager.IsGameOver();
             _gameManager.GameOver();
+
         }
     }
     public void TripleShotActive()
@@ -160,6 +192,7 @@ public class Player : MonoBehaviour
     {
         _isSpeed = true;
         _boost.SetActive(true);
+        _audioSource.PlayOneShot(_boostSound);
         StartCoroutine(SpeedPowerDown());
     }
 
