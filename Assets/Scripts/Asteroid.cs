@@ -10,9 +10,11 @@ public class Asteroid : MonoBehaviour
     private GameObject _explosionPrefab;
     private SpawnManager _spawnManager;
 
+
     void Start()
     {
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
+
     }
     void Update()
     {
@@ -27,6 +29,7 @@ public class Asteroid : MonoBehaviour
             Destroy(other.gameObject);
             _spawnManager.StartSpawning();
             Destroy(gameObject, 0.25f);
+
         }
     }
 
