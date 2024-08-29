@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public bool player1 = false;
+    public bool player2 = false;
     [SerializeField]
     private float _speed = 3.5f;
     [SerializeField]
@@ -54,7 +56,6 @@ public class Player : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
 
 
-        transform.position = new Vector3(0, 0, 0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
         {
@@ -73,15 +74,31 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("AudioSource1 on the player is NULL!");
         }
+
+        if (_gameManager.isCoopMode == false)
+        {
+            transform.position = new Vector3(0, 0, 0);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        CalculateMovement();
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        if (player1)
         {
-            FireLaser();
+            CalculateMovement();
+            if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+            {
+                FireLaser();
+            }
+        }
+        if (player2)
+        {
+            CalculateMovement2();
+            if (Input.GetKeyDown(KeyCode.Keypad0) && Time.time > _canFire)
+            {
+                FireLaser();
+            }
         }
 
     }
@@ -114,6 +131,61 @@ public class Player : MonoBehaviour
         }
 
     }
+    void CalculateMovement2()
+    {
+
+
+        if (_isSpeed)
+        {
+            if (Input.GetKey(KeyCode.Keypad8))
+            {
+                transform.Translate(_speed * _speedBoost * Time.deltaTime * Vector3.up);
+            }
+            if (Input.GetKey(KeyCode.Keypad6))
+            {
+                transform.Translate(_speed * _speedBoost * Time.deltaTime * Vector3.right);
+            }
+            if (Input.GetKey(KeyCode.Keypad5))
+            {
+                transform.Translate(_speed * _speedBoost * Time.deltaTime * Vector3.down);
+            }
+            if (Input.GetKey(KeyCode.Keypad4))
+            {
+                transform.Translate(_speed * _speedBoost * Time.deltaTime * Vector3.left);
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.Keypad8))
+            {
+                transform.Translate(_speed * Time.deltaTime * Vector3.up);
+            }
+            if (Input.GetKey(KeyCode.Keypad6))
+            {
+                transform.Translate(_speed * Time.deltaTime * Vector3.right);
+            }
+            if (Input.GetKey(KeyCode.Keypad2))
+            {
+                transform.Translate(_speed * Time.deltaTime * Vector3.down);
+            }
+            if (Input.GetKey(KeyCode.Keypad4))
+            {
+                transform.Translate(_speed * Time.deltaTime * Vector3.left);
+            }
+        }
+
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0), 0);
+
+        if (transform.position.x > 11.3f)
+        {
+            transform.position = new Vector3(-11, transform.position.y, 0);
+        }
+        else if (transform.position.x < -11.3f)
+        {
+            transform.position = new Vector3(11, transform.position.y, 0);
+        }
+
+    }
 
     void FireLaser()
     {
@@ -129,6 +201,20 @@ public class Player : MonoBehaviour
 
         _audioSource.PlayOneShot(_laserSound);
     }
+    //     void FireLaser2()
+    // {
+    //     _canFire = Time.time + _fireRate;
+    //     if (_isTripleShot)
+    //     {
+    //         Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+    //     }
+    //     else
+    //     {
+    //         Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+    //     }
+
+    //     _audioSource.PlayOneShot(_laserSound);
+    // }
 
     public void Damage()
     {

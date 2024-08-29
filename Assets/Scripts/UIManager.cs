@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI _gameOverText;
     [SerializeField]
     private TextMeshProUGUI _restartText;
+    [SerializeField]
+    private TextMeshProUGUI _quitText;
 
     [SerializeField]
     private Image _livesImg;
@@ -26,6 +28,8 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: " + 0;
         _gameOverText.enabled = false;
         _restartText.enabled = false;
+        _quitText.enabled = false;
+
 
 
     }
@@ -43,6 +47,7 @@ public class UIManager : MonoBehaviour
     {
         _gameOverText.enabled = true;
         _restartText.enabled = true;
+        _quitText.enabled = true;
 
 
         StartCoroutine(GameOverFlickerRoutine());
@@ -54,10 +59,14 @@ public class UIManager : MonoBehaviour
         {
             _gameOverText.enabled = true;
             _restartText.enabled = true;
+            _quitText.enabled = true;
+
 
             yield return new WaitForSeconds(0.5f);
             _gameOverText.enabled = false;
             _restartText.enabled = false;
+            _quitText.enabled = false;
+
 
             yield return new WaitForSeconds(0.5f);
 
