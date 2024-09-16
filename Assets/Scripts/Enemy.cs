@@ -7,8 +7,14 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private float _speed = 4.0f;
     private Player _player;
+
     private Animator _anim;
     private AudioSource _audioSource;
+    [SerializeField]
+    private GameObject _laserPrefab;
+    private float _canFire = -1;
+    private float _fireRate = 3.0f;
+    private bool _isExploded = false;
 
 
 
@@ -16,11 +22,13 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
+
         _audioSource = GetComponent<AudioSource>();
         if (_player == null)
         {
             Debug.LogError("Player not Found!");
         }
+
         _anim = GetComponent<Animator>();
         if (_anim == null)
         {
@@ -35,6 +43,25 @@ public class Enemy : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        CalculateMovement();
+        if (Time.time > _canFire && _isExploded == false)
+        {
+            _fireRate = Random.Range(3.0f, 5.0f);
+            _canFire = Time.time + _fireRate;
+
+            GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+            for (int i = 0; i < lasers.Length; i++)
+            {
+                lasers[i].EnemyLaserInstantiation();
+            }
+        }
+
+
+    }
+
+    private void CalculateMovement()
     {
         transform.Translate(_speed * Time.deltaTime * Vector3.down);
         if (transform.position.y < -5.3)
@@ -54,6 +81,7 @@ public class Enemy : MonoBehaviour
             }
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
+            _isExploded = true;
             Destroy(this.gameObject, 2.5f);
             Destroy(GetComponent<Collider2D>());
             _audioSource.Play();
@@ -68,6 +96,7 @@ public class Enemy : MonoBehaviour
             }
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
+            _isExploded = true;
             Destroy(this.gameObject, 2.5f);
             Destroy(GetComponent<Collider2D>());
             _audioSource.Play();
